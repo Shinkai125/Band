@@ -2,7 +2,6 @@
 @file: bert.py
 @time: 2020-09-23 15:27:12
 """
-
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -26,11 +25,14 @@ def BERT(vocab_size=2000, maxlen=100, embed_dim=256, num_heads=2, feed_forward_d
     mask_input = layers.Input(shape=(maxlen,), dtype=tf.int32, name='Input-Masked')
 
     embedding = BERTEmbedding(maxlen, vocab_size, embed_dim)([token_input, segment_input])
+
+    sequence_output = None
     for i in range(num_layers):
         if i == 0:
             sequence_output = TransformerBlock(embed_dim, num_heads, feed_forward_dim)(embedding)
         else:
             sequence_output = TransformerBlock(embed_dim, num_heads, feed_forward_dim)(sequence_output)
+
     pooled_output = layers.GlobalAveragePooling1D()(sequence_output)
     model = keras.Model(inputs=[token_input, segment_input], outputs=[sequence_output, pooled_output])
     return model
@@ -39,3 +41,5 @@ def BERT(vocab_size=2000, maxlen=100, embed_dim=256, num_heads=2, feed_forward_d
 if __name__ == '__main__':
     model = BERT(maxlen=200, vocab_size=21128, embed_dim=768, num_layers=12, num_heads=12, feed_forward_dim=3072)
     model.summary(line_length=150)
+    for i in range(len(model.layers)):
+        print(model.get_layer(index=i).output)
