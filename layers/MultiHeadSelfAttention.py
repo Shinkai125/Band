@@ -12,9 +12,9 @@ class MultiHeadSelfAttention(layers.Layer):
                 f"embedding dimension = {embed_dim} should be divisible by number of heads = {num_heads}"
             )
         self.projection_dim = embed_dim // num_heads
-        self.query_dense = layers.Dense(embed_dim)
-        self.key_dense = layers.Dense(embed_dim)
-        self.value_dense = layers.Dense(embed_dim)
+        self.query_dense = layers.Dense(embed_dim, name="query")
+        self.key_dense = layers.Dense(embed_dim, name="key")
+        self.value_dense = layers.Dense(embed_dim, name="value")
         self.combine_heads = layers.Dense(embed_dim)
 
     @staticmethod
