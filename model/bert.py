@@ -26,7 +26,6 @@ def BERT(vocab_size=2000, maxlen=100, embed_dim=256, num_heads=2, feed_forward_d
     """
     token_input = layers.Input(shape=(maxlen,), dtype=tf.int32, name='Input-Token')
     segment_input = layers.Input(shape=(maxlen,), dtype=tf.int32, name='Input-Segment')
-    mask_input = layers.Input(shape=(maxlen,), dtype=tf.int32, name='Input-Masked')
 
     embedding = BERTEmbedding(maxlen, vocab_size, embed_dim)([token_input, segment_input])
 
