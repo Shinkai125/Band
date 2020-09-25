@@ -66,7 +66,9 @@ class FocalLoss(tf.keras.losses.Loss):
             modulator = tf.pow(1.0 - probs_gt, self._gamma)
             loss = modulator * cross_entropy
             weighted_loss = tf.where(
-                positive_label_mask, self._alpha * loss, (1.0 - self._alpha) * loss
+                positive_label_mask,
+                self._alpha * loss,
+                (1.0 - self._alpha) * loss,
             )
 
         return weighted_loss

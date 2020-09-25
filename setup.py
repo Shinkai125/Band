@@ -11,7 +11,9 @@ def _get_requirements():
     """Parses requirements.txt file."""
     install_requires_tmp = []
     dependency_links_tmp = []
-    with open(os.path.join(os.path.dirname(__file__), "./requirements.txt"), "r") as f:
+    with open(
+            os.path.join(os.path.dirname(__file__), "./requirements.txt"), "r"
+    ) as f:
         for line in f:
             package_name = line.strip()
             # Skip empty line or comments starting with "#".

@@ -31,8 +31,12 @@ def BERT(
     :param feed_forward_dim: Hidden layer size in feed forward network inside transformer
     :return: tf.keras.Model
     """
-    token_input = layers.Input(shape=(maxlen,), dtype=tf.int32, name="Input-Token")
-    segment_input = layers.Input(shape=(maxlen,), dtype=tf.int32, name="Input-Segment")
+    token_input = layers.Input(
+        shape=(maxlen,), dtype=tf.int32, name="Input-Token"
+    )
+    segment_input = layers.Input(
+        shape=(maxlen,), dtype=tf.int32, name="Input-Segment"
+    )
 
     embedding = BERTEmbedding(maxlen, vocab_size, embed_dim)(
         [token_input, segment_input]
@@ -42,16 +46,25 @@ def BERT(
     for i in range(num_layers):
         if i == 0:
             sequence_output = TransformerBlock(
-                embed_dim, num_heads, feed_forward_dim, name="TransformerBlock-%s" % i
+                embed_dim,
+                num_heads,
+                feed_forward_dim,
+                name="TransformerBlock-%s" % i,
             )(embedding)
         else:
             sequence_output = TransformerBlock(
-                embed_dim, num_heads, feed_forward_dim, name="TransformerBlock-%s" % i
+                embed_dim,
+                num_heads,
+                feed_forward_dim,
+                name="TransformerBlock-%s" % i,
             )(sequence_output)
 
-    pooled_output = layers.GlobalAveragePooling1D(name="pooled_output")(sequence_output)
+    pooled_output = layers.GlobalAveragePooling1D(name="pooled_output")(
+        sequence_output
+    )
     model = keras.Model(
-        inputs=[token_input, segment_input], outputs=[sequence_output, pooled_output]
+        inputs=[token_input, segment_input],
+        outputs=[sequence_output, pooled_output],
     )
     return model
 
@@ -80,20 +93,33 @@ def load_model_from_pretrained_model(model, pretrain_dir, config):
     for i in range(config["num_hidden_layers"]):
         model.get_layer(name="TransformerBlock-%d" % i).set_weights(
             [
-                loader("bert/encoder/layer_%d/attention/self/query/kernel" % i),
+                loader(
+                    "bert/encoder/layer_%d/attention/self/query/kernel" % i
+                ),
                 loader("bert/encoder/layer_%d/attention/self/query/bias" % i),
                 loader("bert/encoder/layer_%d/attention/self/key/kernel" % i),
                 loader("bert/encoder/layer_%d/attention/self/key/bias" % i),
-                loader("bert/encoder/layer_%d/attention/self/value/kernel" % i),
+                loader(
+                    "bert/encoder/layer_%d/attention/self/value/kernel" % i
+                ),
                 loader("bert/encoder/layer_%d/attention/self/value/bias" % i),
-                loader("bert/encoder/layer_%d/attention/output/dense/kernel" % i),
-                loader("bert/encoder/layer_%d/attention/output/dense/bias" % i),
+                loader(
+                    "bert/encoder/layer_%d/attention/output/dense/kernel" % i
+                ),
+                loader(
+                    "bert/encoder/layer_%d/attention/output/dense/bias" % i
+                ),
                 loader("bert/encoder/layer_%d/intermediate/dense/kernel" % i),
                 loader("bert/encoder/layer_%d/intermediate/dense/bias" % i),
                 loader("bert/encoder/layer_%d/output/dense/kernel" % i),
                 loader("bert/encoder/layer_%d/output/dense/bias" % i),
-                loader("bert/encoder/layer_%d/attention/output/LayerNorm/gamma" % i),
-                loader("bert/encoder/layer_%d/attention/output/LayerNorm/beta" % i),
+                loader(
+                    "bert/encoder/layer_%d/attention/output/LayerNorm/gamma"
+                    % i
+                ),
+                loader(
+                    "bert/encoder/layer_%d/attention/output/LayerNorm/beta" % i
+                ),
                 loader("bert/encoder/layer_%d/output/LayerNorm/gamma" % i),
                 loader("bert/encoder/layer_%d/output/LayerNorm/beta" % i),
             ]
@@ -116,7 +142,9 @@ class BERT_Model(object):
 
     @staticmethod
     def load_config(pretrained_model_dir, config_file):
-        with open(os.path.join(pretrained_model_dir, config_file), "r") as load_f:
+        with open(
+                os.path.join(pretrained_model_dir, config_file), "r"
+        ) as load_f:
             config = json.load(load_f)
         return config
 
@@ -143,7 +171,9 @@ class BERT_Model(object):
 
     def from_pretrained(self):
         model = load_model_from_pretrained_model(
-            model=self.bert, pretrain_dir=self.pretrained_model_dir, config=self.config
+            model=self.bert,
+            pretrain_dir=self.pretrained_model_dir,
+            config=self.config,
         )
         return model
 
