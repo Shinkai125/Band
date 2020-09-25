@@ -7,7 +7,7 @@ from abc import abstractmethod
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow.keras.backend as K
-from tensorflow.keras.callbacks import *
+from tensorflow.keras.callbacks import Callback
 
 
 class PerformanceLogger(Callback):
@@ -82,7 +82,11 @@ class LR_Updater(PerformanceLogger):
         old_lr = float(K.get_value(self.model.optimizer.lr))
         self.old_lr = old_lr
         if self.verbose > 0:
-            print("Reset leraning rate from {0} to {1}".format(old_lr, self.base_lr))
+            print(
+                "Reset leraning rate from {0} to {1}".format(
+                    old_lr, self.base_lr
+                )
+            )
         K.set_value(self.model.optimizer.lr, self.base_lr)
 
     def on_train_end(self, logs=None):
@@ -91,7 +95,9 @@ class LR_Updater(PerformanceLogger):
             raise ValueError('Optimizer must have a "lr" attribute.')
         if self.verbose > 0:
             print(
-                "Reset leraning rate from {0} to {1}".format(self.base_lr, self.old_lr)
+                "Reset leraning rate from {0} to {1}".format(
+                    self.base_lr, self.old_lr
+                )
             )
         K.set_value(self.model.optimizer.lr, self.old_lr)
 
@@ -143,7 +149,9 @@ class LR_Finder(LR_Updater):
         if self.move_avg is None:
             self.move_avg = current_loss
         else:
-            self.move_avg = self.move_avg * self.alpha + current_loss * (1 - self.alpha)
+            self.move_avg = self.move_avg * self.alpha + current_loss * (
+                    1 - self.alpha
+            )
         # We stop when the smoothed average of the loss exceeds twice the initial loss
         if self.move_avg > 2 * self.first_loss:
             self.model.stop_training = True
@@ -168,7 +176,9 @@ class CircularLR(LR_Updater):
         assert max_lr > base_lr
         if decay_type not in ["exp", None]:
             raise ValueError(
-                "Invalid decay type. " "Decay type should be one of " '{"exp", None}'
+                "Invalid decay type. "
+                "Decay type should be one of "
+                '{"exp", None}'
             )
         super(CircularLR, self).__init__(base_lr, verbose)
         self.max_lr = max_lr
@@ -186,7 +196,9 @@ class CircularLR(LR_Updater):
             # 已经经历过的周期数
             cycle_num = self.batch_num // (self.step_size * 2)
             # 是否对最大学习率进行（衰减）更新的标志，当经过self.decay_freq周期后，实行一次更新
-            decay_flag = self.batch_num % (self.step_size * 2 * self.decay_freq)
+            decay_flag = self.batch_num % (
+                    self.step_size * 2 * self.decay_freq
+            )
 
             if decay_flag == 0:
                 decay_max_lr = self.max_lr * (
@@ -194,7 +206,9 @@ class CircularLR(LR_Updater):
                 )
                 if decay_max_lr < self.base_lr:
                     decay_max_lr = self.base_lr  # 强制max_lr不能小于base_lr
-                self.lr_interval = (decay_max_lr - self.base_lr) / self.step_size
+                self.lr_interval = (
+                                           decay_max_lr - self.base_lr
+                                   ) / self.step_size
         half_cycle_num = self.batch_num // self.step_size
         decrease_phase = half_cycle_num % 2
         lr = float(K.get_value(self.model.optimizer.lr))

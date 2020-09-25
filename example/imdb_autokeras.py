@@ -39,7 +39,9 @@ except:
 
 loaded_model = load_model("model_autokeras", custom_objects=ak.CUSTOM_OBJECTS)
 print(
-    "Eval Accuracy: {accuracy}".format(accuracy=loaded_model.evaluate(x_test, y_test))
+    "Eval Accuracy: {accuracy}".format(
+        accuracy=loaded_model.evaluate(x_test, y_test)
+    )
 )
 
 predicted_y = loaded_model.predict(x_test)

@@ -58,7 +58,10 @@ class Distiller(keras.Model):
                 tf.nn.softmax(teacher_predictions / self.temperature, axis=1),
                 tf.nn.softmax(student_predictions / self.temperature, axis=1),
             )
-            loss = self.alpha * student_loss + (1 - self.alpha) * distillation_loss
+            loss = (
+                    self.alpha * student_loss
+                    + (1 - self.alpha) * distillation_loss
+            )
 
         # Compute gradients
         trainable_vars = self.student.trainable_variables
@@ -73,7 +76,10 @@ class Distiller(keras.Model):
         # Return a dict of performance
         results = {m.name: m.result() for m in self.metrics}
         results.update(
-            {"student_loss": student_loss, "distillation_loss": distillation_loss}
+            {
+                "student_loss": student_loss,
+                "distillation_loss": distillation_loss,
+            }
         )
         return results
 

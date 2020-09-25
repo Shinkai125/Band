@@ -39,14 +39,18 @@ class MultiHeadSelfAttention(layers.Layer):
             dim_dest, dim_src, scaled_score.dtype
         )
         attention_mask = tf.reshape(attention_mask, [1, 1, dim_dest, dim_src])
-        scaled_score = scaled_score * attention_mask - 1e4 * (1 - attention_mask)
+        scaled_score = scaled_score * attention_mask - 1e4 * (
+                1 - attention_mask
+        )
 
         weights = tf.nn.softmax(scaled_score, axis=-1)
         output = tf.matmul(weights, value)
         return output, weights
 
     def separate_heads(self, x, batch_size):
-        x = tf.reshape(x, (batch_size, -1, self.num_heads, self.projection_dim))
+        x = tf.reshape(
+            x, (batch_size, -1, self.num_heads, self.projection_dim)
+        )
         return tf.transpose(x, perm=[0, 2, 1, 3])
 
     def call(self, inputs, **kwargs):

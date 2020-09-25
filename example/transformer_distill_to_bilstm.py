@@ -11,20 +11,26 @@ from model.transformer import Transformer
 
 vocab_size = 20000  # Only consider the top 20k words
 maxlen = 200  # Only consider the first 200 words of each movie review
-(x_train, y_train), (x_val, y_val) = keras.datasets.imdb.load_data(num_words=vocab_size)
+(x_train, y_train), (x_val, y_val) = keras.datasets.imdb.load_data(
+    num_words=vocab_size
+)
 print(len(x_train), "Training sequences")
 print(len(x_val), "Validation sequences")
 x_train = keras.preprocessing.sequence.pad_sequences(x_train, maxlen=maxlen)
 x_val = keras.preprocessing.sequence.pad_sequences(x_val, maxlen=maxlen)
 
 # Create the teacher
-transformer = Transformer(vocab_size=vocab_size, maxlen=maxlen, feed_forward_dim=32)
+transformer = Transformer(
+    vocab_size=vocab_size, maxlen=maxlen, feed_forward_dim=32
+)
 sequence_output, pooled_output = transformer.outputs
 x = layers.Dropout(0.1)(pooled_output)
 x = layers.Dense(20, activation="relu")(x)
 x = layers.Dropout(0.1)(x)
 outputs = layers.Dense(2, activation="sigmoid")(x)
-teacher = keras.Model(inputs=transformer.inputs, outputs=outputs, name="teacher")
+teacher = keras.Model(
+    inputs=transformer.inputs, outputs=outputs, name="teacher"
+)
 print(teacher.summary())
 
 # Create the student
@@ -37,7 +43,9 @@ print(student.summary())
 
 print("Train teacher as usual")
 teacher.compile(
-    optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"]
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"],
 )
 
 history = teacher.fit(
@@ -49,7 +57,9 @@ distiller = Distiller(student=student, teacher=teacher)
 distiller.compile(
     optimizer=keras.optimizers.Adam(),
     metrics=[keras.metrics.SparseCategoricalAccuracy()],
-    student_loss_fn=keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    student_loss_fn=keras.losses.SparseCategoricalCrossentropy(
+        from_logits=True
+    ),
     distillation_loss_fn=keras.losses.KLDivergence(),
     alpha=0.1,
     temperature=10,

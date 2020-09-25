@@ -23,7 +23,9 @@ def imdb_to_text(max_features=2000000, index_offset=3):
 
     id_to_word = {value: key for key, value in word_to_id.items()}
     x_train = list(
-        map(lambda sentence: " ".join(id_to_word[i] for i in sentence), x_train)
+        map(
+            lambda sentence: " ".join(id_to_word[i] for i in sentence), x_train
+        )
     )
     x_test = list(
         map(lambda sentence: " ".join(id_to_word[i] for i in sentence), x_test)
