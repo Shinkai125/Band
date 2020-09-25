@@ -31,8 +31,12 @@ model.compile("adam", "sparse_categorical_crossentropy", metrics=["accuracy"])
 
 lr_finder = LR_Finder(base_lr=1e-9, lr_multiplier=1.06)
 history = model.fit(
-    x_train, y_train, batch_size=32, epochs=2, validation_data=(x_val, y_val),
-    callbacks=[lr_finder]
+    x_train,
+    y_train,
+    batch_size=32,
+    epochs=2,
+    validation_data=(x_val, y_val),
+    callbacks=[lr_finder],
 )
 
 lr_finder.plot_loss()
