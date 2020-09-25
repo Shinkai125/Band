@@ -6,7 +6,9 @@ from layers.TokenAndPositionEmbedding import TokenAndPositionEmbedding
 from layers.TransformerBlock import TransformerBlock
 
 
-def Transformer(vocab_size=2000, maxlen=100, embed_dim=256, num_heads=2, feed_forward_dim=256):
+def Transformer(
+        vocab_size=2000, maxlen=100, embed_dim=256, num_heads=2, feed_forward_dim=256
+):
     """
     :param vocab_size: Vocabulary size
     :param maxlen: Max sequence size
@@ -17,12 +19,14 @@ def Transformer(vocab_size=2000, maxlen=100, embed_dim=256, num_heads=2, feed_fo
     """
     inputs = layers.Input(shape=(maxlen,), dtype=tf.int32)
     embedding = TokenAndPositionEmbedding(maxlen, vocab_size, embed_dim)(inputs)
-    sequence_output = TransformerBlock(embed_dim, num_heads, feed_forward_dim)(embedding)
+    sequence_output = TransformerBlock(embed_dim, num_heads, feed_forward_dim)(
+        embedding
+    )
     pooled_output = layers.GlobalAveragePooling1D()(sequence_output)
     model = keras.Model(inputs=inputs, outputs=[sequence_output, pooled_output])
     return model
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     model = Transformer()
     model.summary()

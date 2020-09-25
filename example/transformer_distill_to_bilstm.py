@@ -24,7 +24,7 @@ x = layers.Dropout(0.1)(pooled_output)
 x = layers.Dense(20, activation="relu")(x)
 x = layers.Dropout(0.1)(x)
 outputs = layers.Dense(2, activation="sigmoid")(x)
-teacher = keras.Model(inputs=transformer.inputs, outputs=outputs, name='teacher')
+teacher = keras.Model(inputs=transformer.inputs, outputs=outputs, name="teacher")
 print(teacher.summary())
 
 # Create the student
@@ -32,13 +32,13 @@ inputs = keras.Input(shape=(None,), dtype="int32")
 x = layers.Embedding(vocab_size + 1, 64)(inputs)
 x = layers.Bidirectional(layers.LSTM(16))(x)
 outputs = layers.Dense(1, activation="sigmoid")(x)
-student = keras.Model(inputs=inputs, outputs=outputs, name='student')
+student = keras.Model(inputs=inputs, outputs=outputs, name="student")
 print(student.summary())
 
 print("Train teacher as usual")
-teacher.compile(optimizer="adam",
-                loss="sparse_categorical_crossentropy",
-                metrics=["accuracy"])
+teacher.compile(
+    optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"]
+)
 
 history = teacher.fit(
     x_train, y_train, batch_size=32, epochs=2, validation_data=(x_val, y_val)
